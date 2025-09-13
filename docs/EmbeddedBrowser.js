@@ -204,13 +204,15 @@ document.head.appendChild(s);
         });
 
         // Toggle topbar with Shift+F
-        document.addEventListener("keydown",function(ev){
-            if(ev.key.toLowerCase()==="f" && ev.shiftKey && !ev.target.matches("input, textarea")){
-                let head=document.getElementById("rusic-header");
-                let tool=document.getElementById("rusic-toolbar");
-                let hidden=head.style.display==="none";
-                head.style.display=hidden?"block":"none";
-                tool.style.display=hidden?"flex":"none";
-                i.style.height=hidden?"calc(100% - 70px)":"100%";
-                }
+document.addEventListener("keydown",function(ev){
+    if(ev.key.toLowerCase()==="f" && ev.shiftKey && !ev.target.matches("input, textarea")){
+        let head=document.getElementById("rusic-header");
+        let tool=document.getElementById("rusic-toolbar");
+        let hidden=head.style.display==="none";
+        head.style.display=hidden?"block":"none";
+        tool.style.display=hidden?"flex":"none";
+        i.style.height=hidden?"calc(100% - 70px)":"100%";
+    }
+});
+
 }
