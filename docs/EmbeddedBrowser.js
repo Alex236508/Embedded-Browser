@@ -6,8 +6,6 @@ s.src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js";
 s.onload=function(){init();};
 document.head.appendChild(s);
 
-function init(){
-
     function init(){
         var st=document.createElement("style");
         st.innerHTML=`
