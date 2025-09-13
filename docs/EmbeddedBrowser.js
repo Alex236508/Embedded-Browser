@@ -1,6 +1,7 @@
 javascript:(function(){
     var e=document.getElementById("rusic-container");
-    if(e)e.remove();
+    if(e) e.remove();
+
     var s=document.createElement("script");
     s.src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js";
     s.onload=function(){init();};
@@ -14,22 +15,59 @@ javascript:(function(){
                 50% { box-shadow: 0 0 20px black; }
                 100% { box-shadow: 0 0 10px white; }
             }
+            #rusic-container { resize: both; }
         `;
         document.head.appendChild(st);
 
         var c=document.createElement("div");
         c.id="rusic-container";
-        c.style.cssText="position:fixed;z-index:999999;top:100px;left:100px;width:800px;height:600px;border:2px solid white;resize:both;overflow:hidden;background:url('https://plus.unsplash.com/premium_photo-1683133681452-07ee1fc4ffca?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fGFic3RyYWN0JTIwd2hpdGV8ZW58MHx8MHx8fDA%3D') no-repeat center center;background-size:cover;animation:glowEffect 3s infinite alternate;border-radius:12px;";
+        c.style.cssText=`
+            position:fixed;
+            z-index:999999;
+            top:100px;
+            left:100px;
+            width:800px;
+            height:600px;
+            border:2px solid white;
+            overflow:hidden;
+            background:url('https://plus.unsplash.com/premium_photo-1683133681452-07ee1fc4ffca?w=900&auto=format&fit=crop&q=60') no-repeat center center;
+            background-size:cover;
+            animation:glowEffect 3s infinite alternate;
+            border-radius:12px;
+        `;
 
         var h=document.createElement("div");
         h.id="rusic-header";
-        h.style.cssText="width:100%;height:30px;background:#6C7A89;cursor:move;color:white;font-family:sans-serif;padding-left:10px;line-height:30px;user-select:none;";
+        h.style.cssText=`
+            width:100%;
+            height:30px;
+            background:#6C7A89;
+            cursor:move;
+            color:white;
+            font-family:sans-serif;
+            padding-left:30px;   /* leave space for the X on the left */
+            line-height:30px;
+            user-select:none;
+            position:relative;
+        `;
         h.textContent="Embedded Browser";
 
         var cl=document.createElement("div");
         cl.innerHTML="❌";
-        cl.style.cssText="position:absolute;top:5px;right:10px;color:white;font-weight:bold;font-size:18px;cursor:pointer;background:#6C7A89;padding:5px;border-radius:3px;";
+        cl.style.cssText=`
+            position:absolute;
+            top:0;
+            left:5px;
+            font-size:16px;
+            line-height:30px;
+            cursor:pointer;
+            color:white;
+            background:none;
+            border:none;
+            padding:0;
+        `;
         cl.onclick=function(){c.remove();};
+        h.insertBefore(cl,h.firstChild);
 
         var tb=document.createElement("div");
         tb.id="rusic-toolbar";
@@ -57,41 +95,40 @@ javascript:(function(){
         fsBtn.innerHTML="⛶";
         fsBtn.style.cssText="width:30px;margin:5px;padding:5px;background:#6C7A89;color:white;border:none;cursor:pointer;margin-left:auto;";
         fsBtn.onclick=function(){
-            if(c.style.position==="fixed"){
-                c.style.position="absolute";
-                c.style.top="100px";c.style.left="100px";
-                c.style.width="800px";c.style.height="600px";
+            if(c.classList.contains("fullscreen")){
+                c.classList.remove("fullscreen");
+                c.style.top="100px";
+                c.style.left="100px";
+                c.style.width="800px";
+                c.style.height="600px";
             } else {
-                c.style.position="fixed";
-                c.style.top="0";c.style.left="0";
-                c.style.width="100vw";c.style.height="100vh";
+                c.classList.add("fullscreen");
+                c.style.top="0";
+                c.style.left="0";
+                c.style.width="100vw";
+                c.style.height="100vh";
             }
         };
 
         var i=document.createElement("iframe");
         i.style.cssText="width:100%;height:calc(100% - 70px);border:none;";
         i.id="rusic-modal";
-        i.src = "https://boxcat.radio-zvez.info";
+        i.src="https://books.allisons.org";
 
+        // History
         var historyArray=[],currentIndex=-1;
         backBtn.onclick=function(){
-            if(currentIndex>0){
-                currentIndex--;
-                loadNewURL(historyArray[currentIndex]);
-            }
+            if(currentIndex>0){ currentIndex--; loadNewURL(historyArray[currentIndex]); }
         };
         fwdBtn.onclick=function(){
-            if(currentIndex<historyArray.length-1){
-                currentIndex++;
-                loadNewURL(historyArray[currentIndex]);
-            }
+            if(currentIndex<historyArray.length-1){ currentIndex++; loadNewURL(historyArray[currentIndex]); }
         };
         goBtn.onclick=function(){
             var url=inp.value.trim();
             if(!url.startsWith("http")){
                 url="https://www.google.com/search?q="+encodeURIComponent(url);
             }
-            try{new URL(url)}catch(e){alert("Invalid URL.");return;}
+            try{ new URL(url); }catch(e){ alert("Invalid URL."); return; }
             if(currentIndex<historyArray.length-1){
                 historyArray=historyArray.slice(0,currentIndex+1);
             }
@@ -100,7 +137,6 @@ javascript:(function(){
             loadNewURL(url);
         };
 
-        h.appendChild(cl);
         tb.appendChild(backBtn);
         tb.appendChild(fwdBtn);
         tb.appendChild(inp);
@@ -111,6 +147,7 @@ javascript:(function(){
         c.appendChild(i);
         document.body.appendChild(c);
 
+        // Dragging
         var p1=0,p2=0,p3=0,p4=0;
         h.onmousedown=function(e){
             e.preventDefault();
@@ -122,27 +159,48 @@ javascript:(function(){
             e.preventDefault();
             p1=p3-e.clientX;p2=p4-e.clientY;
             p3=e.clientX;p4=e.clientY;
-            c.style.top=(c.offsetTop-p2)+"px";
-            c.style.left=(c.offsetLeft-p1)+"px";
+            let newTop=c.offsetTop-p2;
+            let newLeft=c.offsetLeft-p1;
+            newTop=Math.max(0,Math.min(window.innerHeight-c.offsetHeight,newTop));
+            newLeft=Math.max(0,Math.min(window.innerWidth-c.offsetWidth,newLeft));
+            c.style.top=newTop+"px";
+            c.style.left=newLeft+"px";
         }
         function stopDrag(){
             document.onmouseup=null;
             document.onmousemove=null;
         }
 
+        // Resize observer
+        new ResizeObserver(()=>{
+            let minW=300,minH=200;
+            let maxW=window.innerWidth-c.offsetLeft;
+            let maxH=window.innerHeight-c.offsetTop;
+            let w=Math.max(minW,Math.min(c.offsetWidth,maxW));
+            let h=Math.max(minH,Math.min(c.offsetHeight,maxH));
+            if(w!==c.offsetWidth) c.style.width=w+"px";
+            if(h!==c.offsetHeight) c.style.height=h+"px";
+        }).observe(c);
+
+        // Loader animation (no scale!)
         function loadNewURL(u){
-            gsap.to(c,{duration:0.5,borderRadius:"50%",scale:0.9});
+            gsap.to(c,{duration:0.3,borderRadius:"50%",opacity:0.7});
             setTimeout(function(){
                 i.src=u;
                 inp.value=u;
-                gsap.to(c,{duration:0.5,borderRadius:"12px",scale:1});
-            },500);
+                gsap.to(c,{duration:0.3,borderRadius:"12px",opacity:1});
+            },300);
         }
 
         // Toggle browser with "H"
         document.addEventListener("keydown",function(ev){
             if(ev.key.toLowerCase()==="h" && !ev.target.matches("input, textarea")){
-                c.style.display=c.style.display==="none"?"block":"none";
+                if(c.style.display==="none"){
+                    c.style.display="block";
+                    c.style.transform="";
+                } else {
+                    c.style.display="none";
+                }
             }
         });
 
