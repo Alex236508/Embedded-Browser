@@ -213,7 +213,5 @@ javascript:(function(){
                 head.style.display=hidden?"block":"none";
                 tool.style.display=hidden?"flex":"none";
                 i.style.height=hidden?"calc(100% - 70px)":"100%";
-            }
-        });
-    }
-})();
+                }
+}
